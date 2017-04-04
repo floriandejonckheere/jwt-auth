@@ -1,0 +1,17 @@
+Metrics/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Rails/HasAndBelongsToMany:
+  Enabled: False
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Style/NestedParenthesizedCalls:
+  Enabled: false
