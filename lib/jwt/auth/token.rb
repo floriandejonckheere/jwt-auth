@@ -6,6 +6,9 @@ require 'jwt/auth/configuration'
 
 module JWT
   module Auth
+    ##
+    # In-memory representation of JWT
+    #
     class Token
       attr_accessor :expiration, :subject
 
@@ -32,6 +35,8 @@ module JWT
         token = JWT::Auth::Token.new
         token.expiration = payload['exp']
         token.subject = JWT::Auth.model.find_by :id => payload['sub'], :token_version => payload['ver']
+
+        token
       end
     end
   end

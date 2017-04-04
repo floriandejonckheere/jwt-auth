@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
+
+require 'support/dummy_user'
 
 RSpec.describe JWT::Auth do
   it 'configures correctly' do
@@ -10,5 +11,6 @@ RSpec.describe JWT::Auth do
 
     expect(subject.token_lifetime).to eq 666
     expect(subject.secret).to eq 'mysecret'
+    expect(subject.model).to eq DummyUser
   end
 end

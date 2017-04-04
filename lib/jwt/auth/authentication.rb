@@ -47,7 +47,7 @@ module JWT
         token = header.scan(/Bearer (.*)$/).flatten.last
         return nil unless token
 
-        @token = JWT::Token.from_token token
+        @token = JWT::Auth::Token.from_token token
       rescue JWT::DecodeError
         nil
       end
