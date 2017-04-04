@@ -14,12 +14,7 @@ RSpec.describe JWT::Auth::Token do
   let(:user) { DummyUser.new }
 
   describe 'properties' do
-    let(:token) do
-      token = JWT::Auth::Token.new
-      token.subject = user
-
-      token
-    end
+    let(:token) { token = JWT::Auth::Token.from_user user }
 
     it 'has an expiration' do
       expect(token).to respond_to :expiration
@@ -46,6 +41,9 @@ RSpec.describe JWT::Auth::Token do
 
     it 'matches expiration' do
       expect(token.expiration).to eq JWT::Auth.token_lifetime.from_now.to_i
+    end
+
+    it 'matches subject' do
       expect(token.subject.id).to eq user.id
       expect(token.subject.token_version).to eq user.token_version
     end

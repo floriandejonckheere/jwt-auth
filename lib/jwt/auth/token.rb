@@ -29,6 +29,13 @@ module JWT
         JWT.encode payload, JWT::Auth.secret
       end
 
+      def self.from_user(subject)
+        token = JWT::Auth::Token.new
+        token.subject = subject
+
+        token
+      end
+
       def self.from_token(token)
         payload = JWT.decode(token, JWT::Auth.secret).first
 
