@@ -19,7 +19,7 @@ module JWT
 
       def to_jwt
         payload = {
-          :exp => expiration || JWT::Auth.token_lifetime.hours.from_now.to_i,
+          :exp => expiration || JWT::Auth.token_lifetime.from_now.to_i,
           :sub => subject.id,
           :ver => subject.token_version
         }
