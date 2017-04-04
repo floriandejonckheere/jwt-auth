@@ -26,6 +26,7 @@ JWT::Auth.configure do |config|
   # Token lifetime (in hours)
   #
   config.token_lifetime = 24
+  
   ##
   # JWT secret
   #
@@ -39,6 +40,17 @@ Include model methods in your user model:
 class User < ApplicationRecord
   include JWT::Auth::Authenticatable
 end
+```
+
+Add a `token_version` field to your user model:
+
+```ruby
+class AddTokenVersionToUser < ActiveRecord::Migration[5.0]
+  def change
+    add_column :users, :token_version, :integer, :null => false, :default => 1
+  end
+end
+
 ```
 
 Include controller methods in your `ApplicationController`:

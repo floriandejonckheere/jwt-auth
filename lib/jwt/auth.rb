@@ -3,3 +3,7 @@
 require 'jwt'
 
 require 'jwt/auth/version'
+require 'jwt/auth/configuration'
+require 'jwt/auth/authenticatable'
+require 'jwt/auth/authentication'
+require 'jwt/auth/token'
