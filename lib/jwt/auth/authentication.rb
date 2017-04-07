@@ -29,6 +29,7 @@ module JWT
       # Add JWT header to response
       #
       def add_token_to_response
+        return unless token&.valid?
         token.renew!
         response.headers['Authorization'] = "Bearer #{token.to_jwt}"
       end
