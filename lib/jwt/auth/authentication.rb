@@ -19,7 +19,7 @@ module JWT
       # Authenticate a request
       #
       def authenticate_user
-        return head :unauthorized unless token&.valid?
+        raise JWT::Auth::UnauthorizedError unless token&.valid?
 
         # Regenerate token (renews expiration date)
         add_token_to_response

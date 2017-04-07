@@ -53,11 +53,19 @@ end
 
 ```
 
-Include controller methods in your `ApplicationController`:
+Include controller methods in your `ApplicationController` and handle unauthorized errors:
 
 ```ruby
 class ApplicationController < ActionController::API
   include JWT::Auth::Authentication
+  
+  rescue_from JWT::Auth::UnauthorizedError, :with => :handle_unauthorized
+  
+  protected
+  
+  def handle_unauthorized
+    head :unauthorized
+  end
 end
 ```
 
