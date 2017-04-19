@@ -42,6 +42,14 @@ class User < ApplicationRecord
 end
 ```
 
+Optionally, define the `find_by_token` method on your model to allow additional checks (for example account activation):
+
+```ruby
+def self.find_by_token(params)
+  find_by params.merge :activated => true
+end
+```
+
 Add a `token_version` field to your user model:
 
 ```ruby

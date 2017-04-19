@@ -41,7 +41,9 @@ module JWT
 
         token = JWT::Auth::Token.new
         token.expiration = payload['exp']
-        token.subject = JWT::Auth.model.find_by :id => payload['sub'], :token_version => payload['ver']
+
+        find_method = JWT::Auth.model.respond_to?(:find_by_token) ? :find_by_token : :find_by
+        token.subject = JWT::Auth.model.send find_method, :id => payload['sub'], :token_version => payload['ver']
 
         token
       end
