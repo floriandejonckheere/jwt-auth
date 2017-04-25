@@ -12,14 +12,14 @@ module JWT
       # Current user helper
       #
       def current_user
-        token&.subject
+        jwt&.subject
       end
 
       ##
       # Authenticate a request
       #
       def authenticate_user
-        raise JWT::Auth::UnauthorizedError unless token&.valid?
+        raise JWT::Auth::UnauthorizedError unless jwt&.valid?
 
         # Regenerate token (renews expiration date)
         add_token_to_response
@@ -29,9 +29,9 @@ module JWT
       # Add JWT header to response
       #
       def add_token_to_response
-        return unless token&.valid?
-        token.renew!
-        response.headers['Authorization'] = "Bearer #{token.to_jwt}"
+        return unless jwt&.valid?
+        jwt.renew!
+        response.headers['Authorization'] = "Bearer #{jwt.to_jwt}"
       end
 
       protected
@@ -39,7 +39,7 @@ module JWT
       ##
       # Extract JWT from request
       #
-      def token
+      def jwt
         return @token if @token
 
         header = request.env['HTTP_AUTHORIZATION']
