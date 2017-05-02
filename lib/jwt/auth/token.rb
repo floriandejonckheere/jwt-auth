@@ -13,7 +13,7 @@ module JWT
       attr_accessor :expiration, :subject
 
       def valid?
-        subject && expiration && Time.at(expiration).future?
+        !subject.nil? && !expiration.nil? && Time.at(expiration).future?
       end
 
       def renew!
