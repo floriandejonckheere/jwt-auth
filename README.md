@@ -77,11 +77,15 @@ class ApplicationController < ActionController::API
 end
 ```
 
-Set `before_action` on routes:
+Set callbacks on routes:
 
 ```ruby
 class MyController < ApplicationController
+  # Authenticates user from request header
   before_action :authenticate_user
+  
+  # Renew token and set response header
+  after_action :renew_token
 end
 ```
 

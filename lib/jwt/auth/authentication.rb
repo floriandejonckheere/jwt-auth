@@ -20,15 +20,12 @@ module JWT
       #
       def authenticate_user
         raise JWT::Auth::UnauthorizedError unless jwt&.valid?
-
-        # Regenerate token (renews expiration date)
-        add_token_to_response
       end
 
       ##
       # Add JWT header to response
       #
-      def add_token_to_response
+      def renew_token
         return unless jwt&.valid?
         jwt.renew!
         response.headers['Authorization'] = "Bearer #{jwt.to_jwt}"
