@@ -6,26 +6,30 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'jwt/auth/version'
 
-Gem::Specification.new do |spec|
-  spec.name          = 'jwt-auth'
-  spec.version       = JWT::Auth::VERSION
-  spec.authors       = ['Florian Dejonckheere']
-  spec.email         = ['florian@floriandejonckheere.be']
-  spec.summary       = 'JWT-based authentication for Rails API without Devise'
-  spec.description   = 'Authentication middleware for Rails API that uses JWTs, without depending on Devise'
-  spec.homepage      = 'https://github.com/floriandejonckheere/jwt-auth'
-  spec.license       = 'MIT'
+Gem::Specification.new do |gem|
+  gem.name          = 'jwt-auth'
+  gem.version       = JWT::Auth::VERSION
+  gem.authors       = ['Florian Dejonckheere']
+  gem.email         = ['florian@floriandejonckheere.be']
+  gem.summary       = 'JWT-based authentication for Rails API'
+  gem.description   = 'Authentication middleware for Rails API that uses JWTs'
+  gem.homepage      = 'https://github.com/floriandejonckheere/jwt-auth'
+  gem.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ['lib']
+  gem.files         = `git ls-files -z`.split("\x0")
+  gem.executables   = gem.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.require_paths = ['lib']
 
-  spec.add_dependency 'jwt', '~> 1.5'
-  spec.add_dependency 'rails', '~> 5.0'
+  gem.add_runtime_dependency 'jwt', '~> 1.5'
+  gem.add_runtime_dependency 'rails', '~> 5.0'
 
-  spec.add_development_dependency 'bundler', '~> 1.14'
-  spec.add_development_dependency 'rubocop', '~> 0.48'
-  spec.add_development_dependency 'rake', '~> 12.0'
-  spec.add_development_dependency 'rspec', '~> 3.5'
+  gem.add_development_dependency 'bundler', '~> 1.14'
+  gem.add_development_dependency 'rubocop', '~> 0.48'
+  gem.add_development_dependency 'rake', '~> 12.0'
+  gem.add_development_dependency 'rspec', '~> 3.6'
+  gem.add_development_dependency 'rspec-rails', '~> 3.6'
+  gem.add_development_dependency 'rdoc', '~> 5.0'
+  gem.add_development_dependency 'coveralls', '~> 0.8'
+  gem.add_development_dependency 'byebug'
 end

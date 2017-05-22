@@ -1,4 +1,4 @@
-# JWT::Auth
+# JWT::Auth [![Travis](https://travis-ci.org/floriandejonckheere/jwt-auth.svg?branch=master)](https://travis-ci.org/floriandejonckheere/jwt-auth) [![Coverage Status](https://coveralls.io/repos/github/floriandejonckheere/jwt-auth/badge.svg)](https://coveralls.io/github/floriandejonckheere/jwt-auth)
 
 JWT-based authentication middleware for Rails API without Devise
 
