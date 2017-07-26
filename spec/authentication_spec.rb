@@ -24,6 +24,15 @@ RSpec.describe AuthenticationController, :type => :request do
 
         expect(response.status).to eq 204
       end
+
+      it 'renews the token' do
+        get '/public', :headers => headers
+
+        jwt = response.headers['Authorization'].scan(/Bearer (.*)$/).flatten.last
+        token = JWT::Auth::Token.from_token jwt
+
+        expect(token).to be_valid
+      end
     end
 
     context 'disabled user' do
@@ -55,6 +64,15 @@ RSpec.describe AuthenticationController, :type => :request do
         get '/private', :headers => headers
 
         expect(response.status).to eq 204
+      end
+
+      it 'renews the token' do
+        get '/private', :headers => headers
+
+        jwt = response.headers['Authorization'].scan(/Bearer (.*)$/).flatten.last
+        token = JWT::Auth::Token.from_token jwt
+
+        expect(token).to be_valid
       end
     end
 
