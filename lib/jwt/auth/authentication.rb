@@ -12,21 +12,21 @@ module JWT
       # Current user helper
       #
       def current_user
-        jwt&.subject
+        jwt && jwt.subject
       end
 
       ##
       # Authenticate a request
       #
       def authenticate_user
-        raise JWT::Auth::UnauthorizedError unless jwt&.valid?
+        raise JWT::Auth::UnauthorizedError unless jwt && jwt.valid?
       end
 
       ##
       # Add JWT header to response
       #
       def renew_token
-        return unless jwt&.valid?
+        return unless jwt && jwt.valid?
         jwt.renew!
         response.headers['Authorization'] = "Bearer #{jwt.to_jwt}"
       end
