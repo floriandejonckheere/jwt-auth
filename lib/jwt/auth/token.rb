@@ -31,35 +31,42 @@ module JWT
       end
 
       def to_jwt
-        payload = {
-          :exp => expiration || JWT::Auth.token_lifetime.from_now.to_i,
-          :sub => subject.id,
-          :ver => token_version || subject.token_version
-        }
         JWT.encode payload, JWT::Auth.secret
       end
 
       def self.from_user(subject)
-        token = JWT::Auth::Token.new
+        token = self.new
         token.subject = subject
 
         token
       end
 
+      def payload
+        {
+          :exp => expiration || lifetime.from_now.to_i,
+          :sub => subject.id,
+          :ver => token_version || subject.token_version
+        }
+      end
+
+      def lifetime
+        JWT::Auth.token_lifetime
+      end
+
       def self.from_token(token)
         begin
-          payload = JWT.decode(token, JWT::Auth.secret).first
+          @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
         rescue JWT::ExpiredSignature
-          payload = {}
+          @decoded_payload = {}
         end
 
-        token = JWT::Auth::Token.new
-        token.expiration = payload['exp']
-        token.token_version = payload['ver']
+        token = self.new
+        token.expiration = @decoded_payload['exp']
+        token.token_version = @decoded_payload['ver']
 
-        if payload['sub']
+        if @decoded_payload['sub']
           find_method = JWT::Auth.model.respond_to?(:find_by_token) ? :find_by_token : :find_by
-          token.subject = JWT::Auth.model.send find_method, :id => payload['sub'], :token_version => payload['ver']
+          token.subject = JWT::Auth.model.send find_method, :id => @decoded_payload['sub'], :token_version => @decoded_payload['ver']
         end
 
         token
