@@ -56,7 +56,7 @@ module JWT
       def self.from_token(token)
         begin
           @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
-        rescue JWT::ExpiredSignature
+        rescue JWT::ExpiredSignature, JWT::DecodeError
           @decoded_payload = {}
         end
 
