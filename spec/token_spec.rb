@@ -7,9 +7,9 @@ RSpec.describe JWT::Auth::Token do
   describe 'properties' do
     let(:token) { JWT::Auth::Token.from_user user }
 
-    it 'has an expiration' do
-      expect(token).to respond_to :expiration
-      expect(token.expiration).to be_nil
+    it 'has an issued at' do
+      expect(token).to respond_to :issued_at
+      expect(token.issued_at).to be_nil
     end
 
     it 'has a subject' do
@@ -54,7 +54,7 @@ RSpec.describe JWT::Auth::Token do
     end
 
     it 'is invalid on past date' do
-      token.expiration = 1.second.ago.to_i
+      token.issued_at = (JWT::Auth.token_lifetime + 1.second).ago.to_i
 
       t = JWT::Auth::Token.from_token token.to_jwt
 
@@ -62,7 +62,7 @@ RSpec.describe JWT::Auth::Token do
     end
 
     it 'is invalid after expiry date' do
-      token.expiration = Time.now.to_i
+      token.issued_at = JWT::Auth.token_lifetime.ago.to_i
       sleep 2
 
       t = JWT::Auth::Token.from_token token.to_jwt
@@ -87,14 +87,16 @@ RSpec.describe JWT::Auth::Token do
 
       expect(new_token).to be_valid
       expect(new_jwt).not_to eq old_jwt
-      expect(new_token.expiration).not_to eq old_token.expiration
+      expect(new_token.issued_at).not_to eq old_token.issued_at
     end
   end
 
   describe 'from token' do
+    let(:issued_at) { 1.second.ago.to_i }
+
     let(:jwt) do
       payload = {
-        :exp => JWT::Auth.token_lifetime.from_now.to_i,
+        :iat => issued_at,
         :sub => user.id,
         :ver => user.token_version
       }
@@ -103,8 +105,8 @@ RSpec.describe JWT::Auth::Token do
 
     let(:token) { JWT::Auth::Token.from_token jwt }
 
-    it 'matches expiration' do
-      expect(token.expiration).to eq JWT::Auth.token_lifetime.from_now.to_i
+    it 'matches issued at' do
+      expect(token.issued_at).to eq issued_at
     end
 
     it 'matches subject' do

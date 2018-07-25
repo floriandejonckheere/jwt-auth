@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/numeric/time'
+# require 'active_support/core_ext/numeric/time'
 
 require 'jwt/auth/configuration'
 
@@ -10,14 +10,14 @@ module JWT
     # In-memory representation of JWT
     #
     class Token
-      attr_accessor :expiration, :subject, :token_version
+      attr_accessor :issued_at, :subject, :token_version
 
       def valid?
         # Reload subject to prevent caching the old token_version
         subject && subject.reload
 
-        return false if subject.nil? || expiration.nil? || token_version.nil?
-        return false if Time.at(expiration).past?
+        return false if subject.nil? || issued_at.nil? || token_version.nil?
+        return false if Time.at(issued_at + lifetime.to_i).past?
         return false if token_version != subject.token_version
 
         true
@@ -26,7 +26,7 @@ module JWT
       end
 
       def renew!
-        self.expiration = nil
+        self.issued_at = nil
         self.token_version = nil
       end
 
@@ -43,7 +43,7 @@ module JWT
 
       def payload
         {
-          :exp => expiration || lifetime.from_now.to_i,
+          :iat => issued_at || Time.now.to_i,
           :sub => subject.id,
           :ver => token_version || subject.token_version
         }
@@ -56,12 +56,12 @@ module JWT
       def self.from_token(token)
         begin
           @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
-        rescue JWT::ExpiredSignature, JWT::DecodeError
+        rescue JWT::DecodeError
           @decoded_payload = {}
         end
 
         token = self.new
-        token.expiration = @decoded_payload['exp']
+        token.issued_at = @decoded_payload['iat']
         token.token_version = @decoded_payload['ver']
 
         if @decoded_payload['sub']
