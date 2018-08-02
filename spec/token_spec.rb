@@ -69,6 +69,14 @@ RSpec.describe JWT::Auth::Token do
 
       expect(t).not_to be_valid
     end
+
+    it 'is invalid on future tokens' do
+      token.issued_at = 1.year.from_now.to_i
+
+      t = JWT::Auth::Token.from_token token.to_jwt
+
+      expect(t).not_to be_valid
+    end
   end
 
   describe 'renew!' do

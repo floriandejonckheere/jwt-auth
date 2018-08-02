@@ -18,6 +18,7 @@ module JWT
 
         return false if subject.nil? || issued_at.nil? || token_version.nil?
         return false if Time.at(issued_at + lifetime.to_i).past?
+        return false if Time.at(issued_at).future?
         return false if token_version != subject.token_version
 
         true
