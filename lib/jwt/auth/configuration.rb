@@ -3,7 +3,10 @@
 module JWT
   module Auth
     class << self
-      attr_accessor :model, :secret, :token_lifetime
+      attr_accessor :model,
+                    :secret,
+                    :refresh_token_lifetime,
+                    :request_token_lifetime
 
       def configure
         yield JWT::Auth
