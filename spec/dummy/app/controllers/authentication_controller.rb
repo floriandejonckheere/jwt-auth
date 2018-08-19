@@ -1,9 +1,13 @@
 class AuthenticationController < ApplicationController
-  # Authenticates user from request header
-  before_action :authenticate_user, :only => :private
+  # Refresh request token
+  before_action :refresh_request_token, :only => :refresh
 
-  # Renew token and set response header
-  after_action :renew_token
+  # Authenticates user from request header
+  before_action :authenticate_request_token, :only => :private
+
+  def refresh
+
+  end
 
   def private
     head :no_content

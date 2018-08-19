@@ -5,11 +5,9 @@ require 'rails_helper'
 RSpec.describe AuthenticationController, :type => :request do
   let(:user) { User.create :activated => true }
 
-  let(:headers) do
-    {
-      'Authorization' => "Bearer #{JWT::Auth::Token.from_user(user).to_jwt}"
-    }
-  end
+  let(:headers) { { 'Authorization' => "Bearer #{token.to_jwt}" } }
+
+  let(:token) { JWT::Auth::Token.from_user user }
 
   describe 'GET /public' do
     context 'activated user' do

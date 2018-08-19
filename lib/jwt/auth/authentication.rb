@@ -18,17 +18,15 @@ module JWT
       ##
       # Authenticate a request
       #
-      def authenticate_user
-        raise JWT::Auth::UnauthorizedError unless jwt && jwt.valid?
+      def authenticate_request_token
+        raise JWT::Auth::UnauthorizedError unless jwt && jwt.refresh && jwt.valid?
       end
 
       ##
-      # Add JWT header to response
+      # Authenticate a refresh
       #
-      def renew_token
-        return unless jwt && jwt.valid?
-        jwt.renew!
-        response.headers['Authorization'] = "Bearer #{jwt.to_jwt}"
+      def authenticate_refresh_token
+        raise JWT::Auth::UnauthorizedError unless jwt && jwt.refresh? && jwt.valid?
       end
 
       protected

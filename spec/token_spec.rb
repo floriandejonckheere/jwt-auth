@@ -21,6 +21,11 @@ RSpec.describe JWT::Auth::Token do
       expect(token).to respond_to :token_version
       expect(token.token_version).to be_nil
     end
+
+    it 'has a type' do
+      expect(token).to respond_to :type
+      expect(token.type).to be_nil
+    end
   end
 
   describe 'valid?' do
@@ -73,6 +78,12 @@ RSpec.describe JWT::Auth::Token do
     it 'is invalid on future tokens' do
       token.issued_at = 1.year.from_now.to_i
 
+      t = JWT::Auth::Token.from_token token.to_jwt
+
+      expect(t).not_to be_valid
+    end
+
+    it 'is invalid without type' do
       t = JWT::Auth::Token.from_token token.to_jwt
 
       expect(t).not_to be_valid
