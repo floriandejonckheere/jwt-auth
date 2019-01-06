@@ -13,6 +13,6 @@ RSpec.describe JWT::Auth do
 
     expect(subject.token_lifetime).to eq 24.hours
     expect(subject.secret).to eq 'mysecret'
-    expect(subject.model).to eq User
+    expect(subject.model).to eq 'User'
   end
 end

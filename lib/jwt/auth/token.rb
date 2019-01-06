@@ -54,23 +54,31 @@ module JWT
         JWT::Auth.token_lifetime
       end
 
-      def self.from_token(token)
-        begin
-          @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
-        rescue JWT::DecodeError
-          @decoded_payload = {}
+      class << self
+        def from_token(token)
+          begin
+            @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
+          rescue JWT::DecodeError
+            @decoded_payload = {}
+          end
+
+          token = self.new
+          token.issued_at = @decoded_payload['iat']
+          token.token_version = @decoded_payload['ver']
+
+          if @decoded_payload['sub']
+            find_method = model.respond_to?(:find_by_token) ? :find_by_token : :find_by
+            token.subject = model.send find_method, :id => @decoded_payload['sub'], :token_version => @decoded_payload['ver']
+          end
+
+          token
         end
 
-        token = self.new
-        token.issued_at = @decoded_payload['iat']
-        token.token_version = @decoded_payload['ver']
+        private
 
-        if @decoded_payload['sub']
-          find_method = JWT::Auth.model.respond_to?(:find_by_token) ? :find_by_token : :find_by
-          token.subject = JWT::Auth.model.send find_method, :id => @decoded_payload['sub'], :token_version => @decoded_payload['ver']
+        def model
+          const_get JWT::Auth.model
         end
-
-        token
       end
     end
   end

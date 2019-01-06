@@ -34,6 +34,8 @@ JWT::Auth.configure do |config|
 end
 ```
 
+Do not try to set the `model` configuration property in the initializer, as this property is already set by including the `Authenticatable` concern in your model.
+
 Include model methods in your user model:
 
 ```ruby

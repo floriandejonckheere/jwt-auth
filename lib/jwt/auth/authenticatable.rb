@@ -12,7 +12,7 @@ module JWT
 
       included do
         JWT::Auth.configure do |config|
-          config.model = const_get name
+          config.model = name
         end
       end
     end
