@@ -2,6 +2,6 @@
 
 module JWT
   module Auth
-    VERSION = '4.0.2'
+    VERSION = '4.1.0'
   end
 end
