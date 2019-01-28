@@ -21,15 +21,15 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.add_runtime_dependency 'jwt', '~> 1.5'
-  gem.add_runtime_dependency 'rails', '~> 5.1'
+  gem.add_runtime_dependency 'jwt', '~> 2.0'
+  gem.add_runtime_dependency 'rails', '~> 5.2'
 
-  gem.add_development_dependency 'bundler', '~> 1.15'
-  gem.add_development_dependency 'rubocop', '~> 0.49'
-  gem.add_development_dependency 'rake', '~> 12.0'
-  gem.add_development_dependency 'rspec', '~> 3.6'
-  gem.add_development_dependency 'rspec-rails', '~> 3.6'
-  gem.add_development_dependency 'rdoc', '~> 5.1'
+  gem.add_development_dependency 'bundler', '~> 1.17'
+  gem.add_development_dependency 'rubocop', '~> 0.63'
+  gem.add_development_dependency 'rake', '~> 12.3'
+  gem.add_development_dependency 'rspec', '~> 3.8'
+  gem.add_development_dependency 'rspec-rails', '~> 3.8'
+  gem.add_development_dependency 'rdoc', '~> 6.1'
   gem.add_development_dependency 'coveralls', '~> 0.8'
   gem.add_development_dependency 'byebug'
   gem.add_development_dependency 'sqlite3'
