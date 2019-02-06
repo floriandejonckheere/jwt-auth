@@ -92,4 +92,45 @@ RSpec.describe AuthenticationController, :type => :request do
       end
     end
   end
+
+  describe 'GET /validate' do
+    context 'activated user' do
+      it 'is accessible without token' do
+        get '/validate'
+
+        expect(response.status).to eq 204
+      end
+
+      it 'is accessible with token' do
+        get '/validate', :headers => headers
+
+        expect(response.status).to eq 204
+      end
+
+      it 'renews the token' do
+        get '/validate', :headers => headers
+
+        jwt = response.headers['Authorization'].scan(/Bearer (.*)$/).flatten.last
+        token = JWT::Auth::Token.from_token jwt
+
+        expect(token).to be_valid
+      end
+    end
+
+    context 'disabled user' do
+      let(:user) { User.new }
+
+      it 'is accessible without token' do
+        get '/validate'
+
+        expect(response.status).to eq 204
+      end
+
+      it 'is not accessible with token' do
+        get '/validate', :headers => headers
+
+        expect(response.status).to eq 401
+      end
+    end
+  end
 end

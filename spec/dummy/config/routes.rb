@@ -3,4 +3,5 @@ Rails.application.routes.draw do
 
   get '/public' => 'authentication#public'
   get '/private' => 'authentication#private'
+  get '/validate' => 'authentication#validate'
 end

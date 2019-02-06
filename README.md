@@ -84,7 +84,13 @@ Set callbacks on routes:
 ```ruby
 class MyController < ApplicationController
   # Authenticates user from request header
-  before_action :authenticate_user
+  # The callback raises an UnauthorizedError on missing or invalid token 
+  before_action :authenticate_user, :except => %i[create]
+  
+  # Validate token if there is a token present
+  # The callback raises an UnauthorizedError only if there is a token present, and it is invalid
+  # This prevents users from using an expired token on an unauthenticated route and getting a HTTP 2xx
+  before_action :validate_token 
   
   # Renew token and set response header
   after_action :renew_token

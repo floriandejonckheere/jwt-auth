@@ -23,6 +23,13 @@ module JWT
       end
 
       ##
+      # Validate a token (authenticate a request iff there is a token)
+      #
+      def validate_token
+        authenticate_user if jwt
+      end
+
+      ##
       # Add JWT header to response
       #
       def renew_token
