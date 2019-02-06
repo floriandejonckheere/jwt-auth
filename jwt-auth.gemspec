@@ -32,5 +32,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rdoc', '~> 6.1'
   gem.add_development_dependency 'coveralls', '~> 0.8'
   gem.add_development_dependency 'byebug'
-  gem.add_development_dependency 'sqlite3'
+  gem.add_development_dependency 'sqlite3', '~> 1.3.6'
 end
