@@ -23,9 +23,14 @@ Create an initializer:
 ```ruby
 JWT::Auth.configure do |config|
   ##
-  # Token lifetime
+  # Refresh token lifetime
   #
-  config.token_lifetime = 24.hours
+  config.refresh_token_lifetime = 1.year
+  
+  ##
+  # Access token lifetime
+  #
+  config.access_token_lifetime = 2.hours
   
   ##
   # JWT secret
