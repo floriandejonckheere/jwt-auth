@@ -5,6 +5,9 @@ class ApplicationController < ActionController::Base
 
   rescue_from JWT::Auth::UnauthorizedError, :with => :handle_unauthorized
 
+  # Validate validity of token (if present) on all routes
+  before_action :validate_token
+
   protected
 
   def handle_unauthorized
