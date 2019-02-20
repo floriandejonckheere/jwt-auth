@@ -41,7 +41,7 @@ end
 
 Do not try to set the `model` configuration property in the initializer, as this property is already set by including the `Authenticatable` concern in your model.
 
-Include model methods in your user model:
+Include model methods in your user model. This adds a dummy `#find_by_token` method, which you can override, and a validation for `#token_version`.
 
 ```ruby
 class User < ApplicationRecord
@@ -49,7 +49,7 @@ class User < ApplicationRecord
 end
 ```
 
-Optionally, define the `find_by_token` method on your model to allow additional checks (for example account activation):
+Optionally, override the `#find_by_token` method on your model to allow additional checks (for example account activation):
 
 ```ruby
 def self.find_by_token(params)
@@ -57,7 +57,7 @@ def self.find_by_token(params)
 end
 ```
 
-Add a `token_version` field to your user model:
+Generate the `token_version` migration:
 
 ```ruby
 class AddTokenVersionToUser < ActiveRecord::Migration[5.0]
