@@ -1,125 +1,133 @@
 # frozen_string_literal: true
 
+require 'rails_helper'
+
 RSpec.describe JWT::Auth::Token do
+  ##
+  # Configuration
+  #
+  ##
+  # Test variables
+  #
   let(:user) { User.create! :activated => true }
-  let(:token) { JWT::Auth::Token.from_user user }
 
+  ##
+  # Subject
+  #
+  subject(:token) { described_class.new }
+
+  ##
+  # Tests
+  #
   describe 'properties' do
-    let(:token) { JWT::Auth::Token.from_user user }
+    it { is_expected.to respond_to :issued_at }
+    it { is_expected.to respond_to :subject }
+    it { is_expected.to respond_to :token_version }
+    it { is_expected.to respond_to :type }
 
-    it 'has an issued at' do
-      expect(token).to respond_to :issued_at
-      expect(token.issued_at).to be_nil
-    end
+    it { is_expected.to have_attributes :issued_at => nil, :subject => nil, :token_version => nil, :type => nil }
 
-    it 'has a subject' do
-      expect(token).to respond_to :subject
-      expect(token.subject).to eq user
-    end
+    describe 'constructor' do
+      subject(:token) { described_class.new :issued_at => 'foo', :subject => 'bar', :token_version => 'bat', :type => 'bat' }
 
-    it 'has a token_version' do
-      expect(token).to respond_to :token_version
-      expect(token.token_version).to be_nil
+      it { is_expected.to have_attributes :issued_at => 'foo', :subject => 'bar', :token_version => 'bat', :type => 'bat' }
     end
   end
 
-  describe 'valid?' do
-    it 'is invalid without subject' do
-      jwt = token.to_jwt
-
-      user.destroy
-
-      t = JWT::Auth::Token.from_token jwt
-
-      expect(t).not_to be_valid
+  describe '#valid?' do
+    before do
+      # Allow JWT::Auth::Token to provide a lifetime for test purposes
+      # This should actually be implemented in the subclasses
+      allow_any_instance_of(described_class).to receive(:lifetime).and_return 2.hours.to_i
     end
 
-    it 'is invalid without subject 2' do
-      t = JWT::Auth::Token.from_token token.to_jwt
+    subject(:token) { described_class.new :subject => user, :issued_at => Time.now.to_i, :token_version => user.token_version }
 
-      user.destroy
+    it { is_expected.to be_valid }
 
-      expect(t).not_to be_valid
+    context 'when the subject is nil' do
+      before { token.subject = nil }
+
+      it { is_expected.not_to be_valid }
     end
 
-    it 'is invalid on token_version increment' do
-      t = JWT::Auth::Token.from_token token.to_jwt
+    context 'when the subject is destroyed' do
+      before { user.destroy }
 
-      expect(t).to be_valid
-
-      user.increment_token_version!
-      user.reload
-
-      expect(t).not_to be_valid
+      it { is_expected.not_to be_valid }
     end
 
-    it 'is invalid on past date' do
-      token.issued_at = (JWT::Auth.token_lifetime + 1.second).ago.to_i
+    context 'when issued_at is nil' do
+      before { token.issued_at = nil }
 
-      t = JWT::Auth::Token.from_token token.to_jwt
-
-      expect(t).not_to be_valid
+      it { is_expected.not_to be_valid }
     end
 
-    it 'is invalid after expiry date' do
-      token.issued_at = JWT::Auth.token_lifetime.ago.to_i
-      sleep 2
+    context 'when token_version is nil' do
+      before { token.token_version = nil }
 
-      t = JWT::Auth::Token.from_token token.to_jwt
-
-      expect(t).not_to be_valid
+      it { is_expected.not_to be_valid }
     end
 
-    it 'is invalid on future tokens' do
-      token.issued_at = 1.year.from_now.to_i
+    context 'when token_version is incremented' do
+      # Explicitly call `token` to initialize it with the old token_version
+      before { token; user.increment_token_version! }
 
-      t = JWT::Auth::Token.from_token token.to_jwt
-
-      expect(t).not_to be_valid
+      it { is_expected.not_to be_valid }
     end
-  end
 
-  describe 'renew!' do
-    it 'renews a token' do
-      old_jwt = token.to_jwt
-      old_token = JWT::Auth::Token.from_token old_jwt
+    context 'when the token has expired' do
+      before { token.issued_at = JWT::Auth.access_token_lifetime.ago.to_i }
 
-      expect(old_token).to be_valid
+      it { is_expected.not_to be_valid }
+    end
 
-      sleep 2
+    context 'when the issued_at is in the future' do
+      before { token.issued_at = 1.year.from_now.to_i }
 
-      old_token.renew!
-
-      new_jwt = old_token.to_jwt
-      new_token = JWT::Auth::Token.from_token new_jwt
-
-      expect(new_token).to be_valid
-      expect(new_jwt).not_to eq old_jwt
-      expect(new_token.issued_at).not_to eq old_token.issued_at
+      it { is_expected.not_to be_valid }
     end
   end
 
-  describe 'from token' do
-    let(:issued_at) { 1.second.ago.to_i }
+  describe '#to_jwt' do
+    let(:token) { described_class.new :subject => user }
+    subject(:payload) { JWT.decode(token.to_jwt, JWT::Auth.secret).first }
 
-    let(:jwt) do
-      payload = {
-        :iat => issued_at,
-        :sub => user.id,
-        :ver => user.token_version
-      }
-      JWT.encode payload, JWT::Auth.secret
+    it { is_expected.to eq 'iat' => Time.now.to_i, 'sub' => user.id, 'ver' => user.token_version, 'typ' => nil }
+  end
+
+  describe '.from_jwt' do
+    let(:jwt) { described_class.new(:subject => user, :type => type).to_jwt }
+    let(:type)  { :access }
+    subject(:token) { described_class.from_jwt jwt }
+
+    it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :type => type, :subject => user, :token_version => user.token_version }
+
+    context 'when the typ payload parameter is nil' do
+      let(:type) { nil }
+
+      it { is_expected.to be_nil }
     end
 
-    let(:token) { JWT::Auth::Token.from_token jwt }
+    context 'when the typ payload parameter is "access"' do
+      let(:type) { :access }
 
-    it 'matches issued at' do
-      expect(token.issued_at).to eq issued_at
+      it { is_expected.to be_a_kind_of JWT::Auth::AccessToken }
+      it { is_expected.to have_attributes :type => :access }
     end
 
-    it 'matches subject' do
-      expect(token.subject.id).to eq user.id
-      expect(token.subject.token_version).to eq user.token_version
+    context 'when the typ payload parameter is "refresh"' do
+      let(:type) { :refresh }
+
+      it { is_expected.to be_a_kind_of JWT::Auth::RefreshToken }
+      it { is_expected.to have_attributes :type => :refresh }
+    end
+
+    it 'calls the User#find_by_token method' do
+      expect(User).to receive(:find_by_token)
+                  .with :id => user.id, :token_version => user.token_version
+
+      described_class.from_jwt jwt
     end
   end
 end
