@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  resource :token, :only => %i[create update]
 
-  get '/public' => 'authentication#public'
-  get '/private' => 'authentication#private'
-  get '/validate' => 'authentication#validate'
+  get '/unauthenticated' => 'content#unauthenticated'
+  get '/authenticated' => 'content#authenticated'
 end
