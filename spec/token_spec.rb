@@ -71,7 +71,7 @@ RSpec.describe JWT::Auth::Token do
 
     context 'when token_version is incremented' do
       # Explicitly call `token` to initialize it with the old token_version
-      before { token; user.increment_token_version! }
+      before { token; user.increment! :token_version }
 
       it { is_expected.not_to be_valid }
     end
