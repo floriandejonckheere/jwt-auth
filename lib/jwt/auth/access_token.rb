@@ -8,8 +8,8 @@ module JWT
     # JWT access token
     #
     class AccessToken < Token
-      def valid?
-        super && type == :access
+      def type
+        :access
       end
 
       def lifetime

@@ -8,7 +8,9 @@ module JWT
     # In-memory representation of JWT
     #
     class Token
-      attr_accessor :issued_at, :subject, :token_version, :type
+      attr_accessor :issued_at,
+                    :subject,
+                    :token_version
 
       def initialize(params = {})
         params.each { |key, value| send "#{key}=", value }
@@ -32,6 +34,16 @@ module JWT
         JWT.encode payload, JWT::Auth.secret
       end
 
+      ##
+      # Override this method in subclasses
+      #
+      def type
+        raise NotImplementedError
+      end
+
+      ##
+      # Override this method in subclasses
+      #
       def lifetime
         raise NotImplementedError
       end
@@ -45,7 +57,6 @@ module JWT
           end
 
           params = {
-            :type => @decoded_payload['typ']&.to_sym,
             :issued_at => @decoded_payload['iat'],
             :token_version => @decoded_payload['ver'],
             :subject => model.find_by_token(:id => @decoded_payload['sub'],

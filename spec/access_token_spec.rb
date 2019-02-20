@@ -19,16 +19,9 @@ RSpec.describe JWT::Auth::AccessToken do
   ##
   # Tests
   #
-  describe '#valid?' do
-    subject(:token) { described_class.new :subject => user, :issued_at => Time.now.to_i, :token_version => user.token_version, :type => type }
-    let(:type) { :access }
-
-    it { is_expected.to be_valid }
-
-    context 'when the type is nil' do
-      let(:type) { nil }
-
-      it { is_expected.not_to be_valid }
+  describe '#type' do
+    it 'returns the correct token type' do
+      expect(subject.type).to eq :access
     end
   end
 

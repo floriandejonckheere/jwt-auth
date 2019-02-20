@@ -8,8 +8,8 @@ module JWT
     # JWT refresh token
     #
     class RefreshToken < Token
-      def valid?
-        super && type == :refresh
+      def type
+        :refresh
       end
 
       def lifetime

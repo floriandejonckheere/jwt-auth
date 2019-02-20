@@ -23,21 +23,20 @@ RSpec.describe JWT::Auth::Token do
     it { is_expected.to respond_to :issued_at }
     it { is_expected.to respond_to :subject }
     it { is_expected.to respond_to :token_version }
-    it { is_expected.to respond_to :type }
 
-    it { is_expected.to have_attributes :issued_at => nil, :subject => nil, :token_version => nil, :type => nil }
+    it { is_expected.to have_attributes :issued_at => nil, :subject => nil, :token_version => nil }
 
     describe 'constructor' do
-      subject(:token) { described_class.new :issued_at => 'foo', :subject => 'bar', :token_version => 'bat', :type => 'bat' }
+      subject(:token) { described_class.new :issued_at => 'foo', :subject => 'bar', :token_version => 'bat' }
 
-      it { is_expected.to have_attributes :issued_at => 'foo', :subject => 'bar', :token_version => 'bat', :type => 'bat' }
+      it { is_expected.to have_attributes :issued_at => 'foo', :subject => 'bar', :token_version => 'bat' }
     end
   end
 
   describe '#valid?' do
     before do
-      # Allow JWT::Auth::Token to provide a lifetime for test purposes
-      # This should actually be implemented in the subclasses
+      # Override not implemented methods for test purposes
+      allow_any_instance_of(described_class).to receive(:type).and_return :access
       allow_any_instance_of(described_class).to receive(:lifetime).and_return 2.hours.to_i
     end
 
@@ -90,18 +89,23 @@ RSpec.describe JWT::Auth::Token do
   end
 
   describe '#to_jwt' do
+    before do
+      # Override not implemented methods for test purposes
+      allow_any_instance_of(described_class).to receive(:type).and_return :access
+    end
+
     let(:token) { described_class.new :subject => user }
     subject(:payload) { JWT.decode(token.to_jwt, JWT::Auth.secret).first }
 
-    it { is_expected.to eq 'iat' => Time.now.to_i, 'sub' => user.id, 'ver' => user.token_version, 'typ' => nil }
+    it { is_expected.to eq 'iat' => Time.now.to_i, 'sub' => user.id, 'ver' => user.token_version, 'typ' => 'access' }
   end
 
   describe '.from_jwt' do
-    let(:jwt) { described_class.new(:subject => user, :type => type).to_jwt }
+    let(:jwt) { JWT.encode({ :iat => Time.now.to_i, :sub => user.id, :ver => user.token_version, :typ => type }, JWT::Auth.secret) }
     let(:type)  { :access }
     subject(:token) { described_class.from_jwt jwt }
 
-    it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :type => type, :subject => user, :token_version => user.token_version }
+    it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :subject => user, :token_version => user.token_version }
 
     context 'when the typ payload parameter is nil' do
       let(:type) { nil }
@@ -112,15 +116,13 @@ RSpec.describe JWT::Auth::Token do
     context 'when the typ payload parameter is "access"' do
       let(:type) { :access }
 
-      it { is_expected.to be_a_kind_of JWT::Auth::AccessToken }
-      it { is_expected.to have_attributes :type => :access }
+      it { is_expected.to be_an_instance_of JWT::Auth::AccessToken }
     end
 
     context 'when the typ payload parameter is "refresh"' do
       let(:type) { :refresh }
 
-      it { is_expected.to be_a_kind_of JWT::Auth::RefreshToken }
-      it { is_expected.to have_attributes :type => :refresh }
+      it { is_expected.to be_an_instance_of JWT::Auth::RefreshToken }
     end
 
     it 'calls the User#find_by_token method' do
