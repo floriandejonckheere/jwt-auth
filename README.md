@@ -102,6 +102,13 @@ class MyController < ApplicationController
 end
 ```
 
+## Migration guide
+
+### From 4.2 to 5.0
+
+5.0 includes breaking changes and introduces the concept of a refresh and an access token.
+Please remove jwt-auth entirely from your application, and reinstall it using the instructions above.
+
 ## Contributing
 
 1. Fork it ( https://github.com/floriandejonckheere/jwt-auth/fork )
