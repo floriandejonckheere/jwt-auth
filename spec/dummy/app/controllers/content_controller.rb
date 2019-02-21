@@ -1,6 +1,6 @@
 class ContentController < ApplicationController
   # Validate access token on protected routes
-  before_action :authenticate_user, :only => :authenticated
+  before_action :validate_access_token, :only => :authenticated
 
   ##
   # GET /unauthenticated

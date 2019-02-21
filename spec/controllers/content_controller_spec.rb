@@ -22,7 +22,7 @@ RSpec.describe ContentController do
   # Tests
   #
   describe 'GET /unauthenticated' do
-    subject(:request) { get :unauthenticated }
+    subject { get :unauthenticated }
 
     context 'when no token was specified' do
       it { is_expected.to have_http_status :no_content }
@@ -63,7 +63,7 @@ RSpec.describe ContentController do
   end
 
   describe 'GET /authenticated' do
-    subject(:request) { get :authenticated }
+    subject { get :authenticated }
 
     context 'when no token was specified' do
       it { is_expected.to have_http_status :unauthorized }
