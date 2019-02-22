@@ -10,7 +10,7 @@ module JWT
     class Token
       attr_accessor :issued_at,
                     :subject,
-                    :token_version
+                    :version
 
       def initialize(params = {})
         params.each { |key, value| send "#{key}=", value }
@@ -20,10 +20,10 @@ module JWT
         # Reload subject to prevent caching the old token_version
         subject && subject.reload
 
-        return false if subject.nil? || issued_at.nil? || token_version.nil?
+        return false if subject.nil? || issued_at.nil? || version.nil?
         return false if Time.at(issued_at + lifetime.to_i).past?
         return false if Time.at(issued_at).future?
-        return false if token_version != subject.token_version
+        return false if version != subject.token_version
 
         true
       rescue ActiveRecord::RecordNotFound
@@ -58,7 +58,7 @@ module JWT
 
           params = {
             :issued_at => @decoded_payload['iat'],
-            :token_version => @decoded_payload['ver'],
+            :version => @decoded_payload['ver'],
             :subject => model.find_by_token(:id => @decoded_payload['sub'],
                                             :token_version => @decoded_payload['ver'])
           }
@@ -86,7 +86,7 @@ module JWT
         {
           :iat => issued_at || Time.now.to_i,
           :sub => subject.id,
-          :ver => token_version || subject.token_version,
+          :ver => version || subject.token_version,
           :typ => type
         }
       end

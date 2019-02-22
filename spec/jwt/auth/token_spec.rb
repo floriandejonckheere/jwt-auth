@@ -22,14 +22,14 @@ RSpec.describe JWT::Auth::Token do
   describe 'properties' do
     it { is_expected.to respond_to :issued_at }
     it { is_expected.to respond_to :subject }
-    it { is_expected.to respond_to :token_version }
+    it { is_expected.to respond_to :version }
 
-    it { is_expected.to have_attributes :issued_at => nil, :subject => nil, :token_version => nil }
+    it { is_expected.to have_attributes :issued_at => nil, :subject => nil, :version => nil }
 
     describe 'constructor' do
-      subject(:token) { described_class.new :issued_at => 'foo', :subject => 'bar', :token_version => 'bat' }
+      subject(:token) { described_class.new :issued_at => 'foo', :subject => 'bar', :version => 'bat' }
 
-      it { is_expected.to have_attributes :issued_at => 'foo', :subject => 'bar', :token_version => 'bat' }
+      it { is_expected.to have_attributes :issued_at => 'foo', :subject => 'bar', :version => 'bat' }
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe JWT::Auth::Token do
       allow_any_instance_of(described_class).to receive(:lifetime).and_return 2.hours.to_i
     end
 
-    subject(:token) { described_class.new :subject => user, :issued_at => Time.now.to_i, :token_version => user.token_version }
+    subject(:token) { described_class.new :subject => user, :issued_at => Time.now.to_i, :version => user.token_version }
 
     it { is_expected.to be_valid }
 
@@ -62,8 +62,8 @@ RSpec.describe JWT::Auth::Token do
       it { is_expected.not_to be_valid }
     end
 
-    context 'when token_version is nil' do
-      before { token.token_version = nil }
+    context 'when version is nil' do
+      before { token.version = nil }
 
       it { is_expected.not_to be_valid }
     end
@@ -105,7 +105,7 @@ RSpec.describe JWT::Auth::Token do
     let(:type)  { :access }
     subject(:token) { described_class.from_jwt jwt }
 
-    it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :subject => user, :token_version => user.token_version }
+    it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :subject => user, :version => user.token_version }
 
     context 'when the typ payload parameter is nil' do
       let(:type) { nil }
@@ -127,7 +127,8 @@ RSpec.describe JWT::Auth::Token do
 
     it 'calls the User#find_by_token method' do
       expect(User).to receive(:find_by_token)
-                  .with :id => user.id, :token_version => user.token_version
+                  .with :id => user.id,
+                        :token_version => user.token_version
 
       described_class.from_jwt jwt
     end
