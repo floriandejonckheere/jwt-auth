@@ -18,7 +18,7 @@ module JWT
 
       def valid?
         # Reload subject to prevent caching the old token_version
-        subject && subject.reload
+        subject&.reload
 
         return false if subject.nil? || issued_at.nil? || version.nil?
         return false if Time.at(issued_at + lifetime.to_i).past?
