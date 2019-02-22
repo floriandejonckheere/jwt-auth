@@ -76,6 +76,9 @@ class ApplicationController < ActionController::API
   
   rescue_from JWT::Auth::UnauthorizedError, :with => :handle_unauthorized
   
+  # Validate validity of token (if present) on all routes
+  before_action :validate_token
+
   protected
   
   def handle_unauthorized
@@ -84,23 +87,80 @@ class ApplicationController < ActionController::API
 end
 ```
 
-Set callbacks on routes:
+Add the appropriate filters on your authentication API actions:
 
 ```ruby
-class MyController < ApplicationController
-  # Authenticates user from request header
-  # The callback raises an UnauthorizedError on missing or invalid token 
-  before_action :authenticate_user, :except => %i[create]
-  
-  # Validate token if there is a token present
-  # The callback raises an UnauthorizedError only if there is a token present, and it is invalid
-  # This prevents users from using an expired token on an unauthenticated route and getting a HTTP 2xx
-  before_action :validate_token 
-  
-  # Renew token and set response header
-  after_action :renew_token
+class TokensController < ApplicationController
+  # Validate refresh token on refresh action
+  before_action :validate_refresh_token, :only => :update
+
+  # Require token only on refresh action
+  before_action :require_token, :only => :update
+
+  ##
+  # POST /token
+  #
+  # Sign in the user
+  #
+  def create
+    @user = User.active.find_by :email => params[:email], :password => params[:password]
+    raise JWT::Auth::UnauthorizedError unless @user
+
+    # Return a long-lived refresh token
+    set_refresh_token @user
+
+    head :no_content
+  end
+
+  ##
+  #
+  # PATCH /token
+  #
+  # Refresh access token
+  #
+  def update
+    # Return a short-lived access token
+    set_access_token
+
+    head :no_content
+  end
+end
+
+```
+
+Set the appropriate filters on your API actions:
+
+```ruby
+class ContentController < ApplicationController
+  # Validate access token on all actions
+  before_action :validate_access_token
+
+  # Require token for protected actions
+  before_action :require_token, :only => :authenticated
+
+  ##
+  # GET /unauthenticated
+  #
+  # This endpoint is not protected, performing a request without a token, or with a valid token will succeed
+  # Performing a request with an invalid token will raise an UnauthorizedError
+  #
+  def unauthenticated
+    head :no_content
+  end
+
+  ##
+  # GET /unauthenticated
+  #
+  # This endpoint is protected, performing a request with a valid access token will succeed
+  # Performing a request without a token, with an invalid token or with a refresh token will raise an UnauthorizedError
+  #
+  def authenticated
+    head :no_content
+  end
 end
 ```
+
+You can find a fully working sample application in [spec/dummy](spec/dummy).
 
 ## Migration guide
 
