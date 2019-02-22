@@ -107,6 +107,12 @@ RSpec.describe JWT::Auth::Token do
 
     it { is_expected.to have_attributes :issued_at => a_kind_of(Integer), :subject => user, :version => user.token_version }
 
+    context 'when the jwt cannot be decoded' do
+      let(:jwt) { 'rubbish' }
+
+      it { is_expected.to be_nil }
+    end
+
     context 'when the typ payload parameter is nil' do
       let(:type) { nil }
 

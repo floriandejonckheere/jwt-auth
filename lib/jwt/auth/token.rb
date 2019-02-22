@@ -50,11 +50,7 @@ module JWT
 
       class << self
         def from_jwt(token)
-          begin
-            @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
-          rescue JWT::DecodeError
-            @decoded_payload = {}
-          end
+          @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
 
           params = {
             :issued_at => @decoded_payload['iat'],
@@ -71,6 +67,8 @@ module JWT
           else
             return nil
           end
+        rescue JWT::DecodeError
+          nil
         end
 
         private
