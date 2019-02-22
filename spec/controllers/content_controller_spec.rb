@@ -33,15 +33,12 @@ RSpec.describe ContentController do
 
       before { @request.headers.merge! headers }
 
+      it { is_expected.to have_http_status :unauthorized }
+
       context 'when the token was invalid' do
         before { user.increment! :token_version }
 
         it { is_expected.to have_http_status :unauthorized }
-      end
-
-      # Request will succeed because even if the token type is wrong, the endpoint is not protected
-      context 'when the token was valid' do
-        it { is_expected.to have_http_status :no_content }
       end
     end
 
@@ -50,14 +47,12 @@ RSpec.describe ContentController do
 
       before { @request.headers.merge! headers }
 
+      it { is_expected.to have_http_status :no_content }
+
       context 'when the token was invalid' do
         before { user.increment! :token_version }
 
         it { is_expected.to have_http_status :unauthorized }
-      end
-
-      context 'when the token was valid' do
-        it { is_expected.to have_http_status :no_content }
       end
     end
   end
@@ -74,14 +69,11 @@ RSpec.describe ContentController do
 
       before { @request.headers.merge! headers }
 
+      it { is_expected.to have_http_status :unauthorized }
+
       context 'when the token was invalid' do
         before { user.increment! :token_version }
 
-        it { is_expected.to have_http_status :unauthorized }
-      end
-
-      # Request will succeed because even if the token type is wrong, the endpoint is not protected
-      context 'when the token was valid' do
         it { is_expected.to have_http_status :unauthorized }
       end
     end
@@ -91,14 +83,12 @@ RSpec.describe ContentController do
 
       before { @request.headers.merge! headers }
 
+      it { is_expected.to have_http_status :no_content }
+
       context 'when the token was invalid' do
         before { user.increment! :token_version }
 
         it { is_expected.to have_http_status :unauthorized }
-      end
-
-      context 'when the token was valid' do
-        it { is_expected.to have_http_status :no_content }
       end
     end
   end
