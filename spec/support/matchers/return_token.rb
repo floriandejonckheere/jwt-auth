@@ -15,7 +15,13 @@ RSpec::Matchers.define :return_token do |type|
     return false unless jwt
     @actual = token.class
 
-    token.is_a? type
+    if type.nil?
+      # If the `type` argument was specified, check for existence
+      !token.nil?
+    else
+      # Otherwise check for token type
+      token.is_a? type
+    end
   end
 
   diffable
