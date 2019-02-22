@@ -30,6 +30,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '~> 3.8'
   gem.add_development_dependency 'rspec-rails', '~> 3.8'
   gem.add_development_dependency 'shoulda-matchers'
+  gem.add_development_dependency 'database_cleaner'
   gem.add_development_dependency 'rdoc', '~> 6.1'
   gem.add_development_dependency 'coveralls', '~> 0.8'
   gem.add_development_dependency 'byebug'
