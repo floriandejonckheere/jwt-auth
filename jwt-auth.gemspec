@@ -11,28 +11,29 @@ Gem::Specification.new do |gem|
   gem.version       = JWT::Auth::VERSION
   gem.authors       = ['Florian Dejonckheere']
   gem.email         = ['florian@floriandejonckheere.be']
+  gem.date          = Time.now.utc.strftime '%Y-%m-%d'
   gem.summary       = 'JWT-based authentication for Rails API'
   gem.description   = 'Authentication middleware for Rails API that uses JWTs'
   gem.homepage      = 'https://github.com/floriandejonckheere/jwt-auth'
   gem.license       = 'MIT'
 
-  gem.files         = `git ls-files -z`.split("\x0")
-  gem.executables   = gem.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  gem.files         = `git ls-files -z`.split "\x0"
+  gem.executables   = gem.files.grep(%r{^bin/}) { |f| File.basename f }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ['lib']
+  gem.require_paths = %w(lib)
 
-  gem.add_runtime_dependency 'jwt', '~> 2.0'
-  gem.add_runtime_dependency 'rails', '~> 5.2'
+  gem.add_runtime_dependency 'jwt'
+  gem.add_runtime_dependency 'rails'
 
-  gem.add_development_dependency 'bundler', '~> 1.17'
-  gem.add_development_dependency 'rubocop', '~> 0.63'
-  gem.add_development_dependency 'rake', '~> 12.3'
-  gem.add_development_dependency 'rspec', '~> 3.8'
-  gem.add_development_dependency 'rspec-rails', '~> 3.8'
+  gem.add_development_dependency 'bundler'
+  gem.add_development_dependency 'rubocop'
+  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rspec-rails'
   gem.add_development_dependency 'shoulda-matchers'
   gem.add_development_dependency 'database_cleaner'
-  gem.add_development_dependency 'rdoc', '~> 6.1'
-  gem.add_development_dependency 'coveralls', '~> 0.8'
+  gem.add_development_dependency 'rdoc'
+  gem.add_development_dependency 'coveralls'
   gem.add_development_dependency 'byebug'
   gem.add_development_dependency 'sqlite3', '~> 1.3.6'
 end
