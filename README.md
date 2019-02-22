@@ -2,6 +2,33 @@
 
 JWT-based authentication middleware for Rails API without Devise
 
+## Concept
+
+JWT::Auth uses a two-token authentication mechanism.
+When the client authenticates against the application, a long-lived token is generated (called a refresh token).
+Using this long-lived token, a short-lived token can be requested using a different endpoint.
+This short-lived token (called an access token) can then be used to manipulate the API.
+
+```
+     +--------+                               +---------------+
+     |        |---- Authentication Request -->|    Sign in    |
+     |        |                               |    Endpoint   |
+     |        |<--------- Refresh Token ------|               |
+     |        |                               +---------------+
+     |        |                             
+     |        |                               +---------------+
+     |        |--------- Refresh Token ------>|    Refresh    |
+     | Client |                               |    Endpoint   |
+     |        |<--------- Access Token -------|               |
+     |        |                               +---------------+
+     |        |
+     |        |                               +---------------+
+     |        |---------- Access Token ------>|      API      |
+     |        |                               |    Endpoint   |
+     |        |<------- Protected Resource ---|               |
+     +--------+                               +---------------+
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
