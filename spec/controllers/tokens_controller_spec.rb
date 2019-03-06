@@ -26,7 +26,7 @@ RSpec.describe TokensController do
     let(:activated) { true }
     let(:password) { 'foobar' }
 
-    subject { post :create, { :params => { :email => 'foo@bar', :password => password } } }
+    subject { post :create, :params => { :email => 'foo@bar', :password => password } }
 
     it { is_expected.to have_http_status :no_content }
     it { is_expected.to return_token JWT::Auth::RefreshToken }

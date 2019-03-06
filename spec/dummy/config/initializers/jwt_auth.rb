@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 JWT::Auth.configure do |config|
   ##
   # Refresh token lifetime

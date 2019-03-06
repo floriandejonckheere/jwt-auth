@@ -29,5 +29,8 @@ RSpec.describe JWT::Auth do
   ##
   # Tests
   #
-  it { is_expected.to have_attributes :refresh_token_lifetime => 1.year, :access_token_lifetime => 2.hours, :secret => 'mysecret', :model => 'User' }
+  it { is_expected.to have_attributes :refresh_token_lifetime => 1.year,
+                                      :access_token_lifetime => 2.hours,
+                                      :secret => 'mysecret',
+                                      :model => 'User' }
 end

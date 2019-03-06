@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TokensController < ApplicationController
   # Validate refresh token on refresh action
   before_action :validate_refresh_token, :only => :update

@@ -40,7 +40,9 @@ RSpec.describe JWT::Auth::Token do
       allow_any_instance_of(described_class).to receive(:lifetime).and_return 2.hours.to_i
     end
 
-    subject(:token) { described_class.new :subject => user, :issued_at => Time.now.to_i, :version => user.token_version }
+    subject(:token) { described_class.new :subject => user,
+                                          :issued_at => Time.now.to_i,
+                                          :version => user.token_version }
 
     it { is_expected.to be_valid }
 
@@ -133,8 +135,8 @@ RSpec.describe JWT::Auth::Token do
 
     it 'calls the User#find_by_token method' do
       expect(User).to receive(:find_by_token)
-                  .with :id => user.id,
-                        :token_version => user.token_version
+        .with :id => user.id,
+              :token_version => user.token_version
 
       described_class.from_jwt jwt
     end
