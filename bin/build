@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+#
+# build - Build and publish a gem
+#
+
+require 'yaml'
+
+# Push to git repository
+puts 'Pushing to git repository...'
+`git push --follow-tags`
+
+# Build gem
+puts 'Building .gem...'
+`gem build jwt-auth.gemspec`
+
+# Publish gem
+puts 'Publishing gem...'
+`gem push $(ls *.gem | sort -h | tail -1)`
+
+puts "\nRelease v#{YAML.load_file File.join __dir__, '..', 'version.yml'} published!"

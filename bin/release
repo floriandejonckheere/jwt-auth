@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+#
+# release - Increment gem version and create a release
+#
+
+require 'semverse'
+require 'yaml'
+
+VERSION_FILE = File.join __dir__, '..', 'version.yml'
+
+version = Semverse::Version.new YAML.load_file VERSION_FILE
+new_version = nil
+
+case ARGV.first
+when '--major'
+  new_version = "#{version.major + 1}.0.0"
+when '--minor'
+  new_version = "#{version.major}.#{version.minor + 1}.0"
+when '--patch'
+  new_version = "#{version.major}.#{version.minor}.#{version.patch + 1}"
+else
+  puts "Usage: #{__FILE__} --major | --minor | --patch"
+  exit! 1
+end
+
+# Write version file
+File.write VERSION_FILE, new_version.to_yaml
+
+# Create git commit
+puts 'Creating release commit...'
+`git add #{VERSION_FILE}`
+`git commit -m 'Bump version to #{new_version}'`
+
+# Create git tag
+puts 'Creating release tag...'
+`git tag v#{new_version}`
+
+puts "\nRelease v#{new_version} created!"

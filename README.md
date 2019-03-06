@@ -203,3 +203,5 @@ Please remove jwt-auth entirely from your application, and reinstall it using th
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+For your convenience, scripts to automatically increment version number and build a release were included in `bin/`.
