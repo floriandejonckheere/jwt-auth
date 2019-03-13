@@ -50,28 +50,42 @@ module JWT
 
       class << self
         def from_jwt(token)
-          @decoded_payload = JWT.decode(token, JWT::Auth.secret).first
+          payload = JWT.decode(token, JWT::Auth.secret).first
 
-          params = {
-            :issued_at => @decoded_payload['iat'],
-            :version => @decoded_payload['ver'],
-            :subject => model.find_by_token(:id => @decoded_payload['sub'],
-                                            :token_version => @decoded_payload['ver'])
-          }
+          token = token_for payload['typ']
 
-          case @decoded_payload['typ']
-          when 'access'
-            return AccessToken.new params
-          when 'refresh'
-            return RefreshToken.new params
-          else
-            return nil
-          end
+          return token ? token.new(parse payload) : nil
         rescue JWT::DecodeError
           nil
         end
 
-        private
+        protected
+
+        ##
+        # Parse raw JWT payload into params object used to initialize a token class
+        #
+        def parse(payload)
+          {
+            :issued_at => payload['iat'],
+            :version => payload['ver'],
+            :subject => model.find_by_token(:id => payload['sub'],
+                                            :token_version => payload['ver'])
+          }
+        end
+
+        ##
+        # Determine token class based on type identifier
+        #
+        def token_for(type)
+          case type
+          when 'access'
+            AccessToken
+          when 'refresh'
+            RefreshToken
+          else
+            nil
+          end
+        end
 
         def model
           const_get JWT::Auth.model
