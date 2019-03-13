@@ -54,7 +54,7 @@ module JWT
 
           token = token_for payload['typ']
 
-          return token ? token.new(parse payload) : nil
+          token ? token.new(parse payload) : nil
         rescue JWT::DecodeError
           nil
         end
@@ -82,8 +82,6 @@ module JWT
             AccessToken
           when 'refresh'
             RefreshToken
-          else
-            nil
           end
         end
 
