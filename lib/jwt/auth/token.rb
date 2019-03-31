@@ -68,8 +68,8 @@ module JWT
           {
             :issued_at => payload['iat'],
             :version => payload['ver'],
-            :subject => model.find_by_token(:id => payload['sub'],
-                                            :token_version => payload['ver'])
+            :subject => model(:id => payload['sub'],
+                              :token_version => payload['ver'])
           }
         end
 
@@ -85,8 +85,9 @@ module JWT
           end
         end
 
-        def model
-          const_get JWT::Auth.model
+        def model(**params)
+          model = const_get JWT::Auth.model
+          model.try(:find_by_token, **params) || model.find_by(**params)
         end
       end
 

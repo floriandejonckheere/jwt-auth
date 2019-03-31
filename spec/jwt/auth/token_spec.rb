@@ -11,6 +11,12 @@ RSpec.describe JWT::Auth::Token do
   #
   let(:user) { User.create! :activated => true }
 
+  class DummyModel
+    def self.find_by(**params)
+      true
+    end
+  end
+
   ##
   # Subject
   #
@@ -133,12 +139,27 @@ RSpec.describe JWT::Auth::Token do
       it { is_expected.to be_an_instance_of JWT::Auth::RefreshToken }
     end
 
-    it 'calls the User#find_by_token method' do
-      expect(User).to receive(:find_by_token)
-        .with :id => user.id,
-              :token_version => user.token_version
+    context 'when the model has a .find_by_token do' do
+      it 'calls the User.find_by_token method' do
+        expect(User).to receive(:find_by_token)
+                          .with :id => user.id,
+                                :token_version => user.token_version
 
-      described_class.from_jwt jwt
+        described_class.from_jwt jwt
+      end
+    end
+
+    context 'when the model does not have a .find_by_token method' do
+      before { JWT::Auth.model = "DummyModel" }
+      after { JWT::Auth.model = "User" }
+
+      it 'calls the User.find_by method' do
+        expect(DummyModel).to receive(:find_by)
+                              .with :id => user.id,
+                                    :token_version => user.token_version
+
+        described_class.from_jwt jwt
+      end
     end
   end
 end
